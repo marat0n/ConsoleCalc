@@ -1,7 +1,9 @@
 ﻿using ConsoleCalc;
+using ConsoleCalc.CalculatorSyntaxQueue;
 using System.Text.RegularExpressions;
-using System.Text;
 
+
+var lastResult = Calculator.LastResult;
 
 void WriteToLog(string text)
 {
@@ -79,7 +81,7 @@ void ReplaceVariables()
     {
         if (args[i] == "x")
         {
-            args[i] = Calculator.LastResult.ToString();
+            args[i] = lastResult.ToString();
             continue;
         }
         
@@ -148,9 +150,12 @@ void SetVariable()
 WriteToLog("New session started at " + DateTime.Now);
 while (true)
 {
+    lastResult = Calculator.LastResult;
     if (args.Length == 1)
     {
-        RunCommand(args[0]);
+        if (decimal.TryParse(args[0], out lastResult)) continue;
+        else RunCommand(args[0]);
+
         CleanArgs();
     }
     else if (args.Length > 1)
@@ -161,7 +166,7 @@ while (true)
     }
     else
     {
-        Console.Write(Calculator.LastResult + "> ");
+        Console.Write(lastResult + "> ");
         args = (Console.ReadLine() ?? "").Split(' ');
     }
 }

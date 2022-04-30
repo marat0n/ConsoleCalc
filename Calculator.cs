@@ -13,11 +13,20 @@ namespace ConsoleCalc
         public static void Calculate(List<ISyntaxQueueElement> queue)
         {
             _queueElements = queue;
-            if (_queueElements.Count == 1) LastResult = _queueElements[0].Value;
-            CalculatePriorityOperations();
-            if (_queueElements.Count == 1) LastResult = _queueElements[0].Value;
-            CalculateSecondaryOperations();
+            if (_queueElements.Count == 1)
+            {
+                LastResult = _queueElements[0].Value;
+                return;
+            }
 
+            CalculatePriorityOperations();
+            if (_queueElements.Count == 1)
+            {
+                LastResult = _queueElements[0].Value;
+                return;
+            }
+
+            CalculateSecondaryOperations();
             LastResult = _queueElements[0].Value;
         }
 
