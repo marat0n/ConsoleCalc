@@ -2,22 +2,30 @@
 using System.Text.RegularExpressions;
 
 
-decimal lastResult;
+decimal lastResult = 0;
+bool loggingIsActivated = true;
 
-void WriteToLog(string text)
+void TryWriteToLog(string text)
 {
-    using StreamWriter file = File.AppendText("/log.txt");
-    file.Write(text + "\n");
+    if (loggingIsActivated)
+    {
+        using StreamWriter file = File.AppendText("/log.txt");
+        file.Write(text + "\n");
+    }
 }
 
 void CleanArgs() =>
     args = Array.Empty<string>();
 
-static void Help()
+void Help()
 {
+    var messageAboutLoggingStatus = loggingIsActivated ?
+        "Log of your operations is activated. You can see it in the root directory.\n" :
+        "Log of your operations is deactivated.";
+
     Console.WriteLine(
         "Hi! 💎\n" +
-        "Log of your operations is activated. You can see it in the root directory.\n" +
+        messageAboutLoggingStatus +
         "\nOperations that you can use:\n" +
         "\t+ — for addition\n" +
         "\t- — for subtraction\n" +
@@ -33,6 +41,7 @@ static void Help()
         "\th | help\t- to get this instructions :)\n" +
         "\te | exit\t— for exit\n" +
         "\tv | vars\t— to get list of created variables" +
+        "\tl | log \t- to activate/deactivate logging" +
         "\nCreating your own variables:\n" +
         "\tCommand: var `variableName` `value`\n" +
         "\tExample: var y 10\n"
@@ -60,6 +69,11 @@ void GetVariables()
     Console.WriteLine();
 }
 
+void ChangeLoggingActivation()
+{
+    loggingIsActivated = !loggingIsActivated;
+}
+
 void RunCommand(string command)
 {
     if (command == "cls" | command == "c")
@@ -70,6 +84,8 @@ void RunCommand(string command)
         Exit();
     else if (command == "vars" | command == "v")
         GetVariables();
+    else if (command == "log" | command == "l")
+        ChangeLoggingActivation();
 }
 
 void ReplaceVariables()
@@ -102,24 +118,25 @@ void Calculate()
         ReplaceVariables();
         ArgsParser parser = new(args);
         Calculator.Calculate(parser.Queue.ClonedQueue);
-        WriteToLog($"Calculated: {parser.Queue.ToString().Trim()} = {Calculator.LastResult}");
+        lastResult = Calculator.LastResult;
+        TryWriteToLog($"Calculated: {parser.Queue.ToString().Trim()} = {Calculator.LastResult}");
     }
     catch (ArgsParserException e)
     {
         Console.WriteLine(e.Message + "\nYou can run `help` command for more details.");
 
         if (e.InvalidExpression is not null)
-            WriteToLog($"Unsuccessful try to calculate invalid expression: {string.Join(' ', e.InvalidExpression)}.");
+            TryWriteToLog($"Unsuccessful try to calculate invalid expression: {string.Join(' ', e.InvalidExpression)}.");
     }
     catch (DivideByZeroException)
     {
         Console.WriteLine("I can't divide by zero...");
-        WriteToLog("Dividing by zero.");
+        TryWriteToLog("Dividing by zero.");
     }
     catch (SystemException e)
     {
         Console.WriteLine(e.Message);
-        WriteToLog($"Exception: {e.Message}.");
+        TryWriteToLog($"Exception: {e.Message}.");
     }
 }
 
@@ -138,7 +155,7 @@ void SetVariable()
                 return;
             }
             VariablesController.SetVariable(varName.Value, varValue.Value);
-            WriteToLog($"Setted variable `{varName.Value}` equals {varValue.Value}.");
+            TryWriteToLog($"Setted variable `{varName.Value}` equals {varValue.Value}.");
             return;
         }
     }
@@ -146,10 +163,10 @@ void SetVariable()
 }
 
 
-WriteToLog("New session started at " + DateTime.Now);
+TryWriteToLog("New session started at " + DateTime.Now);
 while (true)
 {
-    lastResult = Calculator.LastResult;
+    //lastResult = Calculator.LastResult;
     if (args.Length == 1)
     {
         if (decimal.TryParse(args[0], out decimal lonelyNumber))

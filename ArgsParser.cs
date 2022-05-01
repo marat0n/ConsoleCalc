@@ -14,26 +14,22 @@ namespace ConsoleCalc
 
             foreach (var arg in args)
             {
+                if (decimal.TryParse(arg, out decimal numValue))
                 {
-                    if (decimal.TryParse(arg, out decimal value))
-                    {
-                        if (Queue.Length > 0)
-                            if (Queue.LastElement is Number) throw new ArgsParserException(args);
-                        Queue.AddElement(new Number(value));
-                        continue;
-                    }
+                    if (Queue.Length > 0)
+                        if (Queue.LastElement is Number) throw new ArgsParserException(args);
+                    Queue.AddElement(new Number(numValue));
+                    continue;
                 }
+                else if (ParseToChar(arg, out char opValue))
                 {
-                    if (ParseToChar(arg, out char value))
-                    {
-                        if (Queue.Length == 0) throw new ArgsParserException(args);
-                        if (Queue.LastElement is Operator) throw new ArgsParserException(args);
+                    if (Queue.Length == 0) throw new ArgsParserException(args);
+                    if (Queue.LastElement is Operator) throw new ArgsParserException(args);
 
-                        if (Enum.IsDefined(typeof(OperatorType), (int)value))
-                        {
-                            Queue.AddElement(new Operator((OperatorType)value));
-                            continue;
-                        }
+                    if (Enum.IsDefined(typeof(OperatorType), (int)opValue))
+                    {
+                        Queue.AddElement(new Operator((OperatorType)opValue));
+                        continue;
                     }
                 }
 
