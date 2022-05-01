@@ -1,9 +1,8 @@
 ﻿using ConsoleCalc;
-using ConsoleCalc.CalculatorSyntaxQueue;
 using System.Text.RegularExpressions;
 
 
-var lastResult = Calculator.LastResult;
+decimal lastResult;
 
 void WriteToLog(string text)
 {
@@ -153,18 +152,21 @@ while (true)
     lastResult = Calculator.LastResult;
     if (args.Length == 1)
     {
-        if (decimal.TryParse(args[0], out lastResult)) continue;
+        if (decimal.TryParse(args[0], out decimal lonelyNumber))
+        {
+            lastResult = lonelyNumber;
+        }
         else RunCommand(args[0]);
 
         CleanArgs();
     }
-    else if (args.Length > 1)
+    if (args.Length > 1)
     {
         if (args[0] == "var") SetVariable();
         else Calculate();
         CleanArgs();
     }
-    else
+    else if (args.Length == 0)
     {
         Console.Write(lastResult + "> ");
         args = (Console.ReadLine() ?? "").Split(' ');
