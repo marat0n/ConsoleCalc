@@ -51,7 +51,7 @@ void Help()
 void Clean()
 {
     CleanArgs();
-    Calculator.ClearLastResult();
+    lastResult = 0;
     Console.Clear();
 }
 
