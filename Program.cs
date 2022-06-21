@@ -40,8 +40,8 @@ void Help()
         "\tc | cls \t— clear result and console\n" +
         "\th | help\t- to get this instructions :)\n" +
         "\te | exit\t— for exit\n" +
-        "\tv | vars\t— to get list of created variables" +
-        "\tl | log \t- to activate/deactivate logging" +
+        "\tv | vars\t— to get list of created variables\n" +
+        "\tl | log \t- to activate/deactivate logging\n" +
         "\nCreating your own variables:\n" +
         "\tCommand: var `variableName` `value`\n" +
         "\tExample: var y 10\n"
